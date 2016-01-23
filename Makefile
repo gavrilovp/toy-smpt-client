@@ -12,16 +12,22 @@ all: $(SMTPCLIENT)
 
 INCLUDES = $(wildcard $(IDIR)/*.h)
 
-OBJS = $(addprefix $(ODIR)/, main.o toylog.o)
+OBJS = $(addprefix $(ODIR)/, main.o toylog.o mail.o client.o)
 
 $(ODIR)/%.o: $(CDIR)/%.c $(INCLUDES)
 	mkdir -p $(ODIR)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 $(SMTPCLIENT): $(OBJS)
-	$(CC) -o $@ $(LDFLAGS) $^
+	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) $^
 
-.PHONY: clean
+.PHONY: clean run
+run: $(SMTPCLIENT)
+	pkill smtp-client
+	rm /dev/mqueue/toy-smtp-mq
+	rm mail/*.ignore
+	./smtp-client
+
 clean:
 	rm -rf $(ODIR) $(CDIR)/*~ $(IDIR)/*~
 	rm -f $(SMTPCLIENT)

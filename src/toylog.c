@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -74,8 +75,17 @@ void closelog(void) {
   
 }
 
-void toylog(const char* message) {
-  if (mq_send(mqd, message, strlen(message)+1, 1) == -1) {
+void toylog(const char* format, ...) {
+  va_list args;
+  char buf[128];
+
+  // How va_start va_end works?
+  va_start(args, format);
+  /* vprintf(format, args); */
+  vsnprintf(buf, 128, format, args);
+  va_end(args);
+
+  if (mq_send(mqd, buf, strlen(buf)+1, 1) == -1) {
     perror("mq_send");
     exit(EXIT_FAILURE);
   }
