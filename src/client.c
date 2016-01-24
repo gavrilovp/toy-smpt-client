@@ -47,8 +47,8 @@ int mark_ignorable_mail(const char* filename) {
 }
 
 int client_discover(Client *c) {
-  DIR* d;
-  struct dirent* f;
+  DIR* d = NULL;
+  struct dirent* f = NULL;
   /* int discovered = 0; */
 
   if ((d = opendir(MAILDIR)) == NULL) {
